@@ -105,75 +105,75 @@ poraka2:
 	JMP kraj				;jump to kraj 
 
 pak2:
-	MOV AL, 11111101b
-	MOV DX, 0378h
-	OUT DX, AL
+	MOV AL, 11111101b		;MOV in AL the combination 11111101b
+	MOV DX, 0378h			;Data register being used 
+	OUT DX, AL				;output it to the parallel port
 
-	MOV DX, 0379h
-	IN AL, DX
-	AND AL, 11110000b
-	CMP AL, 11110000b
-	JNE R2
-	CALL delay_debounce
-	MOV AH, 02h
-	MOV DL, '0'
-	INT 021h
-	MOV BYTE PTR [DI], '0'
-	INC DI
-	LOOP pak3
-	JMP kraj
+	MOV DX, 0379h			;Status register address store in DX
+	IN AL, DX				;input the address store the data in AL
+	AND AL, 11110000b		;mask the data in AL
+	CMP AL, 11110000b		;compare it with 11110000b combination
+	JNE R2					;if not equal jump to label R2
+	CALL delay_debounce		;call delay_debounce if equal
+	MOV AH, 02h				
+	MOV DL, '0'				;'0' is pressed on the matrix keypad
+	INT 021h				
+	MOV BYTE PTR [DI], '0'	;store it in the memory
+	INC DI					;increment the pointer to the the next address
+	LOOP pak3				;LOOP pak3 if CX is not equal to zero	
+	JMP kraj				;if CX is equal to zero
 R2: 
-	CMP AL, 00110000b
-	JNE R3
-	CALL delay_debounce
+	CMP AL, 00110000b		;compare AL with 00110000b combination	
+	JNE R3					;if not equal jump to R3
+	CALL delay_debounce		;call procedure delay_debounce
 	MOV AH, 02h
-	MOV DL, '8'
-	INT 021h
-	MOV BYTE PTR [DI], '8'
-	INC DI
-	LOOP pak3
-	JMP kraj
+	MOV DL, '8'				;'8' is pressed on the matrix keypad	
+	INT 021h				;show on the screen
+	MOV BYTE PTR [DI], '8'	;store it in the memory
+	INC DI					;increment DI for one 		
+	LOOP pak3				;LOOP pak3 if CX is not equal to zero	
+	JMP kraj				;jump to kraj if CX is equal to zero
 R3:
-	CMP AL, 01010000b
-	JNE R4
-	CALL delay_debounce
-	MOV AH, 02h
-	MOV DL, '5'
+	CMP AL, 01010000b		;compare with 01010000b combination
+	JNE R4					;jump to R4 if AL is not equal to that combination
+	CALL delay_debounce		;call delay_debounce	
+	MOV AH, 02h	
+	MOV DL, '5'				;move to DL '5' because switch '5' is pressed
 	INT 021h
-	MOV BYTE PTR [DI], '5'
-	INC DI
-	LOOP pak3
-	JMP kraj
-R4:
-	CMP AL, 01100000b
-	JNE pak3
-	CALL delay_debounce
-	MOV AH, 02h
-	MOV DL, '2'
-	INT 021h
-	MOV BYTE PTR [DI], '2'
-	INC DI
-	LOOP pak3
-	JMP kraj
+	MOV BYTE PTR [DI], '5'	;move to where DI is pointing 
+	INC DI					;increment DI by one
+	LOOP pak3				;loop through pak3 if CX is not equal to zero
+	JMP kraj				;if CX is equal to zero jump to kraj
+ R4:
+	CMP AL, 01100000b		;compare AL with 01100000b combination
+	JNE pak3				;if not equal AL to combination jump to pak3	
+	CALL delay_debounce		;call delay_debounce
+	MOV AH, 02h				
+	MOV DL, '2'				;move to DL '2' because switch '2' is pressed	
+	INT 021h				;show on screen\
+	MOV BYTE PTR [DI], '2'	;'2' store in memory with pointer DI
+	INC DI					;increment DI by one
+	LOOP pak3				;Loop through pak3 if CX is not equal to zero
+	JMP kraj				;jumps to kraj if CX is equal to zero
 pak3:
-	MOV AL, 11111011b
-	MOV DX, 0378h
-	OUT DX, AL
+	MOV AL, 11111011b		;MOV in AL 11111011b combination 
+	MOV DX, 0378h			;Data register being used 
+	OUT DX, AL				;output that combination on parallel port 
 
-	MOV DX, 0379h
-	IN AL, DX
-	AND AL, 11110000b
-	CMP AL, 11110000b
-	JNE RR1
-	CALL delay_debounce
-	MOV AH, 02h
-	MOV DL, '#'
-	INT 021h
-	MOV BYTE PTR [DI], '#'
-	INC DI
-	DEC CX
-	JNE pak1
-	JMP kraj
+	MOV DX, 0379h			;Address for Status register 	
+	IN AL, DX				;Input from Status register and store in AL register 
+	AND AL, 11110000b		;Mask the AL register 
+	CMP AL, 11110000b		;Compare the AL register with 11110000b combination 
+	JNE RR1					;if not equal jump to RR1 label
+	CALL delay_debounce		;call delay_debounce
+	MOV AH, 02h				
+	MOV DL, '#'				;'#' being pressed on the matrix keypad 
+	INT 021h				;Service routine for writing on screen
+	MOV BYTE PTR [DI], '#'	;store in memory with DI pointer 
+	INC DI					;increment DI pointer by one
+	DEC CX					;Decrement CX pointer by one (Loop instruction is not working)	
+	JNZ pak1				;If CX is not zero jump to pak1 label
+	JMP kraj				;if CX is zero jump to kraj label
 
 RR1:
 	CMP AL, 00110000b 
