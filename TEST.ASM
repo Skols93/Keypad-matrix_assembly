@@ -176,35 +176,35 @@ pak3:
 	JMP kraj				;if CX is zero jump to kraj label
 
 RR1:
-	CMP AL, 00110000b 
-	JNE RR2
-	CALL delay_debounce
-	MOV AH, 02h
-	MOV DL, '9'
-	INT 021h
-	MOV BYTE PTR [DI], '9'
-	INC DI
-	DEC CX
-	JNE pak1
-	JMP kraj
+	CMP AL, 00110000b 		;Compare AL with 00110000b combination 
+	JNE RR2				    ;if not equal to that combination jump to RR2 label
+	CALL delay_debounce		;call delay_debounce
+	MOV AH, 02h				;service routine for screen update
+	MOV DL, '9'				;service routine for screen displaing of '9'
+	INT 021h				;interrupt the service routine
+	MOV BYTE PTR [DI], '9'	;'9' store in the memory pointed by DI pointer	
+	INC DI					;increment DI pointer
+	DEC CX					;Decrement CX counter by one (handy decremented counter)	
+	JNZ pak1				;if CX is not equal to zero then jump to pak1 label
+	JMP kraj				;jump to kraj label if CX is equal to zero		
 
 RR2:        
-	CMP AL, 01010000b
-	JNE RR3
-	CALL delay_debounce
+	CMP AL, 01010000b		;compare AL with 01010000b combination 
+	JNE RR3					;if AL is not equal to that combination then jump to RR3 label
+	CALL delay_debounce		;call delay_debounce
 	MOV AH, 02h
-	MOV DL, '6'
-	INT 021h
-	MOV BYTE PTR [DI], '6'
-	INC DI
-	DEC CX
-	JNE pak1
-	JMP kraj
+	MOV DL, '6'				;'6' is pressed on the keypad matrix and show on the screen
+	INT 021h				;service routine 
+	MOV BYTE PTR [DI], '6'	;'6' is pressed on the keypad matrix and store in the memory pointed by the DI pointer	
+	INC DI					;increment DI pointer by one
+	DEC CX					;Decrement CX by one (manualy decremented counter)
+	JNZ pak1				;if not zero jump to pak1
+	JMP kraj				;if zero jump to kraj
 
 RR3:
-	CMP AL, 01100000b
-	JNE pak1
-	CALL delay_debounce
+	CMP AL, 01100000b		;compare AL with 01100000b combination
+	JNE pak1				;if AL is not that combination jump to pak1
+	CALL delay_debounce		;call delay_debounce
 	MOV AH, 02h
 	MOV DL, '3'
 	INT 021h
@@ -216,30 +216,30 @@ RR3:
 	
 
 kraj:
-	LEA SI, shifra
-	LEA DI, tochna
+	LEA SI, shifra			;Load effective address in SI from Shifra in memory
+	LEA DI, tochna			;Load effective address in DI from tochna in memory
 
-	MOV CX, 6d
+	MOV CX, 6d				;CX is counter of elements in memory
 loop1:
-	MOV AL, [SI]
-	MOV AH, [DI]
-	CMP AL, AH
-	JNZ notTrue
-	INC SI
-	INC DI
-	LOOP loop1
+	MOV AL, [SI]			;Move in AL the element pointed by SI pointer	
+	MOV AH, [DI]			;Move in AH the element pointed by DI pointer
+	CMP AL, AH				;Compare AL and AH registers 
+	JNE notTrue				;If are not equal jump to notTrue label
+	INC SI					;increment SI by one 
+	INC DI					;Increment DI by one
+	LOOP loop1				;Loop loop1 (if CX is not equal to zero)
 
 True:
 	MOV AH, 09h
-	LEA DX, ttrue
-	INT 021h
-	JMP EndK
+	LEA DX, ttrue			;DX is pointer in memory ttrue variable 
+	INT 021h				;interrupt 021h service routine
+	JMP EndK				;jump to EndK
 notTrue:
-	MOV AH, 09h
-	LEA DX, ntrue
-	INT 021h
+	MOV AH, 09h				;AH 09h for showing string on display
+	LEA DX, ntrue			;DX is pointer in memory ntrue variable
+	INT 021h				;interrupt 021h service routine
 EndK:
-	NOP
+	NOP						;No operation instruction
 
 	
 main ENDP
@@ -249,15 +249,17 @@ main ENDP
 ; Kraj na programata 
 MOV AX, 04C00h
 INT 021h
-
+;---------------------------------------------------------------------------------------------------------------------------------------
+; Delay debounce procedure
 delay_debounce PROC
-   PUSH CX
-   MOV ECX, 00FFFFFFFh
+   PUSH CX ;push CX on stack (old value on stack)
+   MOV ECX, 00FFFFFFFh 	;ECX has new value
 loop1:
-   DEC ECX
-   JNE loop1
-   POP CX
-   RET
+   DEC ECX  ;Decrement ECX by one
+   JNE loop1	;if not zero go to loop1
+   POP CX		;pop it from stack(bring back old value to CX)	
+   RET			;return 
 delay_debounce ENDP
+;----------------------------------------------------------------------------------------------------------------------------------------------------------------
 code_seg ENDS
 END start
