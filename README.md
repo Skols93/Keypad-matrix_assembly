@@ -1,12 +1,12 @@
 ### Keypad Matrix Assembly Project
-This repository contains an assembly language implementation for interfacing with a 4x4 keypad matrix using MIPS assembly. It demonstrates how to read input from the keypad and display corresponding output on a simulated LED display.
+This repository contains an assembly language implementation for interfacing with a 3x4 keypad matrix using MASM assembly. It demonstrates how to read input from the keypad and display corresponding output on a simulated LED display.
 
-##Features
+## Features
 Keypad Input: Reads keypresses from a 4x4 matrix keypad.
 Output Display: Simulates displaying characters corresponding to keypad inputs.
 Example Code: Includes example code for initializing the keypad, reading input, and displaying output.
-Files Included
-main.asm: Main assembly code implementing keypad interaction and output display.
+## Files Included
+TEST.asm: Main assembly code implementing keypad interaction and output display.
 keypad.asm: Assembly code handling keypad scanning and input processing.
 README.md: This file, providing an overview of the project and instructions.
 LICENSE: MIT License for the project.
